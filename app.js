@@ -3,10 +3,15 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const DAL = require('./dataAccessLayer');
+const ObjectId = require('mongodb').ObjectId;
+const port = 5000;
+DAL.Connect();
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 require('dotenv').config();
+var cors = require('cors');
 var app = express();
 
 // view engine setup
@@ -19,8 +24,32 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
+
+app.get('/api/waterFilters', cors(), async function(req, res) {
+  // const result = Object.values(products);
+  const result = await DAL.Find();
+
+  res.send(result);
+});
+
+app.get('/api/waterFilters/:id', cors(), async function(req, res) {
+  const id = req.params.id;
+  
+  const product = {
+      _id: ObjectId(id)
+  };
+
+  const result = await DAL.Find(product);
+
+  if (result) {
+      res.send(result);
+  }
+  else {
+      res.send('No product with ID: ' + id + ' found!');
+  }
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
