@@ -23,9 +23,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(cors());
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);
+
+// app.all('/', function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "X-Requested-With");
+//   next()
+// });
 
 app.get('/api/waterFilters', cors(), async function(req, res) {
   // const result = Object.values(products);
@@ -49,6 +55,43 @@ app.get('/api/waterFilters/:id', cors(), async function(req, res) {
   else {
       res.send('No product with ID: ' + id + ' found!');
   }
+});
+
+app.post('/api/waterFilters', cors(), async function(req, res) {
+  const product = req.body;
+  console.log('incoming request', product);
+  
+  if (product.name && product.price && product.type && product.URL) {
+      const result = await DAL.Insert(product);
+
+      res.send('Successfully created a product!');
+  }
+  else {
+      res.send('Fail');
+  }
+});
+
+app.put('/api/waterFilters/:id', cors(), async function(req, res) {
+  const id = req.params.id;
+  const product = {
+      _id: ObjectId(id)
+  };
+  const newProduct = req.body;
+  const updatedProduct = { $set: newProduct};
+  const result = await DAL.Update(product, updatedProduct);
+      res.send(result);
+});
+
+app.delete('/api/waterFilters/:id', cors(), async function(req, res) {
+  const id = req.params.id;
+  const product = {
+      _id: ObjectId(id)
+  };
+  const result = await DAL.Remove(product);
+  
+  // delete products[id];
+
+  res.send(result);
 });
 
 // catch 404 and forward to error handler
