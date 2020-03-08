@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const DAL = require('./dataAccessLayer');
 const ObjectId = require('mongodb').ObjectId;
-const port = 5000;
+const port = process.env.PORT;
 DAL.Connect();
 
 var indexRouter = require('./routes/index');
