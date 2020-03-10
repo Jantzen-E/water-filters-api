@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const DAL = require('./dataAccessLayer');
 const ObjectId = require('mongodb').ObjectId;
-const port = process.env.PORT;
+const PORT = process.env.PORT;
 DAL.Connect();
 
 
@@ -109,6 +109,10 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+app.listen(PORT, function(){
+  console.log('Server is running on port:',PORT);
 });
 
 module.exports = app;
